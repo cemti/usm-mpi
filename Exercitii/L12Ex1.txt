@@ -1,0 +1,5 @@
+1. Se creeaza sau se stabilesc e-tipul si f-tipul pentru a determina vederea unui fisier;
+2. Se deschide un fisier utilizand functia MPI_File_open;
+3. Se determina vederea fisier utilizand functia MPI_File_set_view, unde vor fi pasate e-tipul si f-tipul;
+4. Se realizeaza operatii de citire sau inscriere de date, utilizand functiile MPI_File_write si MPI_File_read,
+5. In final, se inchide fisierul utilizand functia MPI_File_close,
