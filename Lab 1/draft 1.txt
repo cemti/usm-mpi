@@ -1,0 +1,50 @@
+-- NOT IMPLEMENTED --
+Parallel elimination of dominated lines
+
+root has
+	[
+		[X, X, X, ...],
+		[Y, Y, Y, ...]
+		...
+	],
+	[[i_1_1, i_1_2, ...], [i_2_1, i_2_2, ...], ...]
+
+process has
+	[X, X, X, ...],
+	[Y, Y, Y, ...] *
+	
+	[i_1_1, i_1_2 *]
+	
+* load-balancing
+
+Definition of line elimination
+[A, B, C, D, ...] // eliminated if a > A, b > B, ...
+[a, b, c, d, ...] // eliminated if A > a, B > b, ...
+Assertion - between these two lines, at most one is eliminated
+
+We might take advantage of global variables
+as root:
+	have the entire matrix
+	scatter some of its lines to all of the processes
+	start the algorithm
+	gather eliminated line indices from all of the processes
+	remove said lines from the matrix
+	repeat until no lines are eliminated (if no modification occured)
+
+algorithm:
+	have a local array that keeps track of eliminated lines
+	eliminate the dominated local lines (preferably fill the dominated line with NaN)
+	if the next process is itself then skip to the end of algorithm
+	send to the next process the lines "tagged" with its rank
+	advice - communication occurs in a ring
+	
+	loop:
+		receive confirmation from the next process (important to prevent multiple messages from the same process)
+		receive lines from the previous process
+		send confirmation to the previous process
+		if the lines received have the "tag" equal with its rank, then break the loop
+		eliminate the dominated local/distributed lines
+		send the modified received lines to the next process
+		repeat the loop
+	
+	advice - be prepared to send the local array to the root

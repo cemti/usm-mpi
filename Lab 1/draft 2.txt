@@ -1,0 +1,40 @@
+ALLMAXLOC implementation
+Let the initial matrix nXm be
+[
+	[A, B, C, ...],
+	[D, E, F, ...],
+	...
+]
+
+ALLMAXLOC implies MAXLOC but it keeps track all of the results.
+Unfortunately, using it in conjuction with MPI_Reduce might be inefficient due to transmission of large and possibly unused (by the non-root processes) data.
+Each cell has to be an array of n elements, turning the matrix 3d.
+
+[
+	[[A, ...?], [B, ...?], [C, ...?]],
+	[[D, ...?], [E, ...?], [F, ...?]],
+	...
+]
+
+Let it be a 3x4 matrix:
+[
+	[(1, 0), (2, 0), (3, 0)],
+	[(4, 1), (5, 1), (6, 1)],
+	[(7, 2), (8, 2), (9, 2)],
+	[(7, 3), (8, 3), (9, 3)]
+]
+
+The "inflated" matrix becomes:
+[
+	[[(1, 0), ?, ?, ?], [(2, 0), ?, ?, ?], [(3, 0), ?, ?, ?]],
+	[[(4, 1), ?, ?, ?], [(5, 1), ?, ?, ?], [(6, 1), ?, ?, ?]],
+	[[(7, 2), ?, ?, ?], [(8, 2), ?, ?, ?], [(9, 2), ?, ?, ?]],
+	[[(7, 3), ?, ?, ?], [(8, 3), ?, ?, ?], [(9, 3), ?, ?, ?]]
+]
+Or, the received row can be "inflated" locally.
+
+The ALLMAXLOC-reduced array would be:
+[[(7, 2), (7, 3), ?, ?], [(8, 2), (8, 3), ?, ?], [(9, 2), (9, 3), ?, ?]]
+
+In a working implementation, the ? element can be (-1, -1) or any pair with the value inequal with the first value.
+Implication: create a new MPI datatype (e. g. array of n instances of MPI_2INT)
